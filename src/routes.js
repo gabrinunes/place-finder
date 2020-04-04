@@ -8,7 +8,7 @@ import Places from './pages/Places'
 export default function Routes(){
     return (
      <NavigationContainer>
-         <AppStack.Navigator>
+         <AppStack.Navigator screenOptions={{headerShown:false}}>
              <AppStack.Screen name="Places" component={Places}/>
          </AppStack.Navigator>
      </NavigationContainer>

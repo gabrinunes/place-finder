@@ -9,6 +9,13 @@
       "android",
       "web"
     ],
+    "android": {
+      "package": "com.gabrielSA.Placefinder",
+      "config":{
+        "googleMaps": { "apiKey": "AIzaSyABx8KkExyTQoWBAtfVDIGOgCdwiNLVMik" } 
+      },
+      "versionCode": 1
+    },
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

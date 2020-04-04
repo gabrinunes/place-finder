@@ -5,11 +5,39 @@ import api from '../../Services/Places.api'
 import {FontAwesome} from '@expo/vector-icons'
 import styles from './styles'
 
+import * as Location  from 'expo-location'
+import * as Permmissions from 'expo-permissions'
+
 export default class Places extends React.Component {
      state={
       places:null,
       loading:true,
-       }      
+      loadingmark:true,
+      error:'',
+      location:null
+       }
+       
+      getLocation = async ()=>{
+        let {status} = await Permmissions.askAsync(Permmissions.LOCATION)
+        if(status!='granted'){
+          this.setState({
+            error:'Permissão negada'
+          })
+        }
+
+        let location = await Location.getCurrentPositionAsync({accuracy:Location.Accuracy.Highest})
+
+        const{latitude,longitude} = location.coords
+        this.setState({
+          location:{
+            latitude,
+            longitude
+          },
+          loadingmark:false
+        })
+      }
+
+
       searchPlaces = ()=>{
          api.get('mapbox.places/hospital.json?bbox=-48.468709,-1.451940,-48.436370,-1.419611&access_token=pk.eyJ1IjoiZ2Ficml4ZGQiLCJhIjoiY2s4amM2N3phMDIzbzNlcWJ3aG9wZnFiOSJ9.ZgSDvbJErpkkhQeYi3i-5w')
          .then(response =>{
@@ -32,19 +60,23 @@ export default class Places extends React.Component {
        }
 
        componentDidMount(){
+         this.getLocation()
          this.searchPlaces()
-       }
+        }
+
   render() {
-    const{places,loading,query} = this.state
-    if(loading){
+    const{places,loading,location,loadingmark} = this.state
+    if(loading||loadingmark){
      return null
     }
     return (
       <View style={styles.container}>
+        <View>
+        </View>
         <MapView style={styles.mapStyle} 
          initialRegion={{
-             latitude:-1.4347828,
-             longitude:-48.4515453,
+             latitude:location.latitude,
+             longitude:location.longitude,
              latitudeDelta: 0.0080,
              longitudeDelta: 0.0060 
          }}
@@ -61,16 +93,16 @@ export default class Places extends React.Component {
         </MapView>
          <View style={styles.bottom}>
          <TouchableOpacity onPress={()=> this.searchPlacesInterest('hospital')}>
-         <FontAwesome name="hospital-o" size={26}/>
-           <Text style={styles.button}>Hospital</Text>
+         <FontAwesome name="hospital-o" size={45}/>
+           <Text style={styles.button}>hospital</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={()=> this.searchPlacesInterest('delegacia')}>
-        <FontAwesome name="siren" size={26}/>
-           <Text style={styles.button}>Delegacia</Text>
+        <FontAwesome name="hotel" size={45}/>
+           <Text style={styles.button}>delegacia</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={()=> this.searchPlacesInterest('hotel')}>
-        <FontAwesome name="hotel" size={26}/>
-           <Text style={styles.button}>Hotel</Text>
+        <TouchableOpacity  onPress={()=> this.searchPlacesInterest('hotel')}>
+        <FontAwesome name="hotel" size={45}/>
+           <Text style={{marginLeft:13}}>hotel</Text>
         </TouchableOpacity>
          </View>
       </View>
