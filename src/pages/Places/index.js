@@ -13,6 +13,7 @@ export default class Places extends React.Component {
       places:null,
       loading:true,
       loadingmark:true,
+      geocode:null,
       error:'',
       location:null
        }
@@ -28,6 +29,7 @@ export default class Places extends React.Component {
         let location = await Location.getCurrentPositionAsync({accuracy:Location.Accuracy.Highest})
 
         const{latitude,longitude} = location.coords
+        this.getGeocodeAsync({latitude,longitude})
         this.setState({
           location:{
             latitude,
@@ -35,6 +37,11 @@ export default class Places extends React.Component {
           },
           loadingmark:false
         })
+      }
+
+      getGeocodeAsync = async(location) =>{
+        let geocode = await Location.reverseGeocodeAsync(location)
+        this.setState({geocode})
       }
 
 
@@ -65,13 +72,15 @@ export default class Places extends React.Component {
         }
 
   render() {
-    const{places,loading,location,loadingmark} = this.state
+    const{places,loading,location,loadingmark,geocode} = this.state
     if(loading||loadingmark){
      return null
     }
     return (
       <View style={styles.container}>
-        <View>
+        <View style={styles.headerLocation}>
+        <Text style={styles.location}>Localização</Text>
+        <Text style={styles.street}>{geocode? `${geocode[0].street},${geocode[0].region}`:""}</Text>
         </View>
         <MapView style={styles.mapStyle} 
          initialRegion={{

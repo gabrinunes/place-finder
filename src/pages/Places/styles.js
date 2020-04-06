@@ -18,6 +18,17 @@ export default StyleSheet.create({
       marginRight:9,
       marginLeft:9,
     },
+    location:{
+    fontSize:22,
+    fontWeight:'300'
+    },
+    street:{
+     marginTop:3
+    },
+    headerLocation:{
+     flex:0.13,
+     marginLeft:22
+    },
     mapStyle:{
       flex:1
     } 
