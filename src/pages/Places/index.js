@@ -11,7 +11,6 @@ import * as Permmissions from 'expo-permissions'
 export default class Places extends React.Component {
      state={
       places:null,
-      loading:true,
       loadingmark:true,
       geocode:null,
       error:'',
@@ -63,17 +62,6 @@ export default class Places extends React.Component {
       }
 
 
-      searchPlaces = ()=>{
-         api.get(`mapbox.places/hospital.json?bbox=-49.45111158133713,-1.4804150287769784,-47.451739218662865,-1.3904869712230217&limit=10&access_token=pk.eyJ1IjoiZ2Ficml4ZGQiLCJhIjoiY2s4amM2N3phMDIzbzNlcWJ3aG9wZnFiOSJ9.ZgSDvbJErpkkhQeYi3i-5w`)
-         .then(response =>{
-          
-          this.setState({
-             places:response.data.features,
-             loading:false
-           })
-         })
-       }
-
        searchPlacesInterest = (query)=>{
          const {bbox} = this.state
          api.get(`mapbox.places/${query}.json?bbox=${bbox.long_min},${bbox.lat_min},${bbox.long_max},${bbox.lat_max}&limit=10&access_token=pk.eyJ1IjoiZ2Ficml4ZGQiLCJhIjoiY2s4amM2N3phMDIzbzNlcWJ3aG9wZnFiOSJ9.ZgSDvbJErpkkhQeYi3i-5w`)
@@ -88,11 +76,10 @@ export default class Places extends React.Component {
 
        componentDidMount(){
          this.getLocation()
-         this.searchPlaces()
         }
 
   render() {
-    const{places,loading,location,loadingmark,geocode} = this.state
+    const{places,location,loadingmark,geocode} = this.state
     if(loadingmark){
      return null
     }
@@ -106,8 +93,8 @@ export default class Places extends React.Component {
          initialRegion={{
              latitude:location.latitude,
              longitude:location.longitude,
-             latitudeDelta: 0.0080,
-             longitudeDelta: 0.0060 
+             latitudeDelta: 0.0650,
+             longitudeDelta: 0.0650 
          }}
         >
         <Marker
@@ -118,8 +105,12 @@ export default class Places extends React.Component {
          title={'localização atual'}
          image={require('../../../assets/home-icon.png')}
         >
-        </Marker>  
-        {places.map((location,id)=> <Marker
+        </Marker>
+          
+        
+          {places
+          ?places.map((location,id)=>    //condição para evitar erro de null ou undefined,solução criada para executar a função apos o carreamento da tela.
+          <Marker
             key={id}
             coordinate={{
               latitude:location.geometry.coordinates[1],
@@ -127,7 +118,9 @@ export default class Places extends React.Component {
             }}
             title={location.text}
            >
-          </Marker>)}
+          </Marker>
+          ):null}
+          
       
         </MapView>
          <View style={styles.bottom}>
