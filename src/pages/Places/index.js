@@ -125,6 +125,7 @@ export default class Places extends React.Component {
               latitude:location.geometry.coordinates[1],
               longitude:location.geometry.coordinates[0]
             }}
+            title={location.text}
            >
           </Marker>)}
       

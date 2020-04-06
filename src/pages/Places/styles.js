@@ -1,11 +1,9 @@
 import {StyleSheet} from 'react-native'
-import {Dimensions} from 'react-native'
-
-const {width,height} = Dimensions.get('screen')
 export default StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: '#fff',
+      paddingTop:25
     },
     button:{
       fontSize:14,
