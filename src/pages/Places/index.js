@@ -1,6 +1,6 @@
 import React from 'react'
-import {View,Text,StyleSheet,Dimensions,TouchableOpacity} from 'react-native'
-import MapView,{Marker} from 'react-native-maps'
+import {View,Text,Image,TouchableOpacity} from 'react-native'
+import MapView,{Marker, Callout} from 'react-native-maps'
 import api from '../../Services/Places.api'
 import {FontAwesome} from '@expo/vector-icons'
 import styles from './styles'
@@ -15,6 +15,7 @@ export default class Places extends React.Component {
       loadingmark:true,
       geocode:null,
       error:'',
+      bbox:null,
       location:null
        }
        
@@ -42,11 +43,28 @@ export default class Places extends React.Component {
       getGeocodeAsync = async(location) =>{
         let geocode = await Location.reverseGeocodeAsync(location)
         this.setState({geocode})
+        this.getBoundsCoordinates()
+      }
+
+      getBoundsCoordinates(){
+        const {location}=this.state
+        var lat_min = location.latitude - (0.009 * 5)
+        var long_min = location.longitude - (0.009 * 5)
+        var long_max = location.longitude + (0.009 * 5)
+        var lat_max = location.latitude + (0.009 * 5)
+        this.setState({
+          bbox:{
+            lat_max,
+            long_min,
+            lat_min,
+            long_max
+          }
+        })
       }
 
 
       searchPlaces = ()=>{
-         api.get('mapbox.places/hospital.json?bbox=-48.468709,-1.451940,-48.436370,-1.419611&access_token=pk.eyJ1IjoiZ2Ficml4ZGQiLCJhIjoiY2s4amM2N3phMDIzbzNlcWJ3aG9wZnFiOSJ9.ZgSDvbJErpkkhQeYi3i-5w')
+         api.get(`mapbox.places/hospital.json?bbox=-49.45111158133713,-1.4804150287769784,-47.451739218662865,-1.3904869712230217&limit=10&access_token=pk.eyJ1IjoiZ2Ficml4ZGQiLCJhIjoiY2s4amM2N3phMDIzbzNlcWJ3aG9wZnFiOSJ9.ZgSDvbJErpkkhQeYi3i-5w`)
          .then(response =>{
           
           this.setState({
@@ -57,11 +75,13 @@ export default class Places extends React.Component {
        }
 
        searchPlacesInterest = (query)=>{
-         api.get(`mapbox.places/${query}.json?bbox=-48.468709,-1.451940,-48.436370,-1.419611&access_token=pk.eyJ1IjoiZ2Ficml4ZGQiLCJhIjoiY2s4amM2N3phMDIzbzNlcWJ3aG9wZnFiOSJ9.ZgSDvbJErpkkhQeYi3i-5w`)
+         const {bbox} = this.state
+         api.get(`mapbox.places/${query}.json?bbox=${bbox.long_min},${bbox.lat_min},${bbox.long_max},${bbox.lat_max}&limit=10&access_token=pk.eyJ1IjoiZ2Ficml4ZGQiLCJhIjoiY2s4amM2N3phMDIzbzNlcWJ3aG9wZnFiOSJ9.ZgSDvbJErpkkhQeYi3i-5w`)
          .then(response =>{
 
           this.setState({
-            places:response.data.features
+            places:response.data.features,
+            loading:false
           })
          })
        }
@@ -73,7 +93,7 @@ export default class Places extends React.Component {
 
   render() {
     const{places,loading,location,loadingmark,geocode} = this.state
-    if(loading||loadingmark){
+    if(loadingmark){
      return null
     }
     return (
@@ -90,15 +110,24 @@ export default class Places extends React.Component {
              longitudeDelta: 0.0060 
          }}
         >
-        {places.map((location,id)=><Marker
-         key={id}
+        <Marker
          coordinate={{
-           latitude:location.geometry.coordinates[1],
-           longitude:location.geometry.coordinates[0],
+           latitude:location.latitude,
+           longitude:location.longitude,
          }}
-         title={location.text}
-         description={location.properties.address}
-        />)}
+         title={'localização atual'}
+         image={require('../../../assets/home-icon.png')}
+        >
+        </Marker>  
+        {places.map((location,id)=> <Marker
+            key={id}
+            coordinate={{
+              latitude:location.geometry.coordinates[1],
+              longitude:location.geometry.coordinates[0]
+            }}
+           >
+          </Marker>)}
+      
         </MapView>
          <View style={styles.bottom}>
          <TouchableOpacity onPress={()=> this.searchPlacesInterest('hospital')}>
