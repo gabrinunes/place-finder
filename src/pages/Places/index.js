@@ -81,7 +81,11 @@ export default class Places extends React.Component {
   render() {
     const{places,location,loadingmark,geocode} = this.state
     if(loadingmark){
-     return null
+      return(
+      <View style={styles.loading}>
+        <Image source={require('../../../assets/loading.gif')} style={{width:150,height:150}}/>
+      </View>
+      )
     }
     return (
       <View style={styles.container}>
