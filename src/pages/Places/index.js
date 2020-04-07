@@ -2,7 +2,7 @@ import React from 'react'
 import {View,Text,Image,TouchableOpacity} from 'react-native'
 import MapView,{Marker, Callout} from 'react-native-maps'
 import api from '../../Services/Places.api'
-import {FontAwesome} from '@expo/vector-icons'
+import {FontAwesome,Foundation} from '@expo/vector-icons'
 import styles from './styles'
 
 import * as Location  from 'expo-location'
@@ -129,15 +129,15 @@ export default class Places extends React.Component {
         </MapView>
          <View style={styles.bottom}>
          <TouchableOpacity onPress={()=> this.searchPlacesInterest('hospital')}>
-         <FontAwesome name="hospital-o" size={45}/>
-           <Text style={styles.button}>hospital</Text>
+         <FontAwesome name="hospital-o" style={styles.button}/>
+           <Text style={styles.buttonText}>hospital</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={()=> this.searchPlacesInterest('delegacia')}>
-        <FontAwesome name="hotel" size={45}/>
-           <Text style={styles.button}>delegacia</Text>
+        <Foundation name="sheriff-badge" size={35} style={{marginLeft:13,color:'#41414d'}}/>
+           <Text style={styles.buttonText}>delegacia</Text>
         </TouchableOpacity>
         <TouchableOpacity  onPress={()=> this.searchPlacesInterest('hotel')}>
-        <FontAwesome name="hotel" size={45}/>
+        <FontAwesome name="hotel" style={styles.button}/>
            <Text style={{marginLeft:13}}>hotel</Text>
         </TouchableOpacity>
          </View>

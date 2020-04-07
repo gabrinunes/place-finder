@@ -9,8 +9,13 @@ export default StyleSheet.create({
      flex:1,
      alignItems:'center',
      paddingTop:205
-    },
+    }, 
     button:{
+     fontSize:35,
+     color:'#41414d',
+     marginLeft:8
+    },
+    buttonText:{
       fontSize:14,
       fontWeight:'500',
     },
