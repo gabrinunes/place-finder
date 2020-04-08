@@ -1,4 +1,7 @@
-import {StyleSheet} from 'react-native'
+import {StyleSheet,Dimensions} from 'react-native'
+
+const{width,heigth} = Dimensions.get('window')
+
 export default StyleSheet.create({
     container: {
       flex: 1,
@@ -35,9 +38,31 @@ export default StyleSheet.create({
     },
     headerLocation:{
      flex:0.13,
-     marginLeft:22
+     marginLeft:22,
     },
+    mapButton:{
+      alignItems:'flex-end',
+      marginTop:-38,
+      marginRight:8,
+    },
+    modal:{
+      backgroundColor:'#ffffff',
+      width:'80%',
+      height: '35%',
+      marginLeft:35,
+      marginVertical:80,
+      padding:40,
+      borderRadius:10,
+    },
+    modalContainer:{
+      alignItems:'center',
+    },
+    modalText:{
+      margin:8,
+      fontSize:18,
+      fontWeight:'500'
+    }, 
     mapStyle:{
-      flex:1
+      flex:0.95
     } 
   });

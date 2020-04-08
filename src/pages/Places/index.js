@@ -1,8 +1,8 @@
 import React from 'react'
-import {View,Text,Image,TouchableOpacity} from 'react-native'
-import MapView,{Marker, Callout} from 'react-native-maps'
+import {View,Text,Image,TouchableOpacity, Modal} from 'react-native'
+import MapView,{Marker} from 'react-native-maps'
 import api from '../../Services/Places.api'
-import {FontAwesome,Foundation} from '@expo/vector-icons'
+import {FontAwesome,Foundation,Feather} from '@expo/vector-icons'
 import styles from './styles'
 
 import * as Location  from 'expo-location'
@@ -14,6 +14,7 @@ export default class Places extends React.Component {
       loadingmark:true,
       geocode:null,
       error:'',
+      visible:true,
       bbox:null,
       location:null
        }
@@ -45,12 +46,12 @@ export default class Places extends React.Component {
         this.getBoundsCoordinates()
       }
 
-      getBoundsCoordinates(){
+      getBoundsCoordinates(range){
         const {location}=this.state
-        var lat_min = location.latitude - (0.009 * 5)
-        var long_min = location.longitude - (0.009 * 5)
-        var long_max = location.longitude + (0.009 * 5)
-        var lat_max = location.latitude + (0.009 * 5)
+        var lat_min = location.latitude - (0.009 * range)
+        var long_min = location.longitude - (0.009 * range)
+        var long_max = location.longitude + (0.009 * range)
+        var lat_max = location.latitude + (0.009 * range)
         this.setState({
           bbox:{
             lat_max,
@@ -58,7 +59,7 @@ export default class Places extends React.Component {
             lat_min,
             long_max
           }
-        })
+        }) 
       }
 
 
@@ -79,7 +80,7 @@ export default class Places extends React.Component {
         }
 
   render() {
-    const{places,location,loadingmark,geocode} = this.state
+    const{places,location,loadingmark,geocode,visible} = this.state
     if(loadingmark){
       return(
       <View style={styles.loading}>
@@ -92,6 +93,11 @@ export default class Places extends React.Component {
         <View style={styles.headerLocation}>
         <Text style={styles.location}>Localização</Text>
         <Text style={styles.street}>{geocode? `${geocode[0].street},${geocode[0].region}`:""}</Text>
+        <View style={styles.mapButton}>
+          <TouchableOpacity onPress={()=> this.setState({visible:true})}>
+            <Feather name="map" size={35} color="#41414d"/>
+          </TouchableOpacity>
+        </View>
         </View>
         <MapView style={styles.mapStyle} 
          initialRegion={{
@@ -124,9 +130,31 @@ export default class Places extends React.Component {
            >
           </Marker>
           ):null}
+
           
-      
         </MapView>
+          <Modal
+          transparent={true}
+          visible={visible}
+          >
+            <View style={{backgroundColor:'#000000aa',flex:1}}>
+              <View style={styles.modal}>
+                <View style={styles.modalContainer}>
+                <Text style={{fontSize:18,fontWeight:'bold',marginVertical:-20,marginBottom:2}}>Por favor Escolha um raio de busca em Km:</Text>
+                <TouchableOpacity onPress={()=> this.setState({visible:false},this.getBoundsCoordinates('1'))}>
+                  <Text style={styles.modalText}>1KM</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={()=> this.setState({visible:false},this.getBoundsCoordinates('3'))}>
+                  <Text style={styles.modalText}>3KM</Text>
+                </TouchableOpacity><TouchableOpacity onPress={()=> this.setState({visible:false},this.getBoundsCoordinates('5'))}>
+                  <Text style={styles.modalText}>5KM</Text>
+                </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+
+          </Modal>
+
          <View style={styles.bottom}>
          <TouchableOpacity onPress={()=> this.searchPlacesInterest('hospital')}>
          <FontAwesome name="hospital-o" style={styles.button}/>
