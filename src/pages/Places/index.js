@@ -3,6 +3,7 @@ import {View,Text,Image,TouchableOpacity, Modal} from 'react-native'
 import MapView,{Marker} from 'react-native-maps'
 import api from '../../Services/Places.api'
 import {FontAwesome,Foundation,Feather} from '@expo/vector-icons'
+import Spinner from 'react-native-loading-spinner-overlay'
 import styles from './styles'
 
 import * as Location  from 'expo-location'
@@ -15,6 +16,8 @@ export default class Places extends React.Component {
       geocode:null,
       error:'',
       visible:true,
+      visiblemark:true,
+      spinnerloading:false,
       bbox:null,
       location:null
        }
@@ -64,13 +67,16 @@ export default class Places extends React.Component {
 
 
        searchPlacesInterest = (query)=>{
+         this.setState({spinnerloading:true})
          const {bbox} = this.state
          api.get(`mapbox.places/${query}.json?bbox=${bbox.long_min},${bbox.lat_min},${bbox.long_max},${bbox.lat_max}&limit=10&access_token=pk.eyJ1IjoiZ2Ficml4ZGQiLCJhIjoiY2s4amM2N3phMDIzbzNlcWJ3aG9wZnFiOSJ9.ZgSDvbJErpkkhQeYi3i-5w`)
          .then(response =>{
 
           this.setState({
             places:response.data.features,
-            loading:false
+            loading:false,
+            spinnerloading:false,
+            visiblemark:true
           })
          })
        }
@@ -80,12 +86,12 @@ export default class Places extends React.Component {
         }
 
   render() {
-    const{places,location,loadingmark,geocode,visible} = this.state
+    const{places,location,loadingmark,geocode,visible,spinnerloading,visiblemark} = this.state
     if(loadingmark){
       return(
-      <View style={styles.loading}>
-        <Image source={require('../../../assets/loading.gif')} style={{width:150,height:150}}/>
-      </View>
+        <Spinner
+         visible={true}
+        />
       )
     }
     return (
@@ -99,6 +105,9 @@ export default class Places extends React.Component {
           </TouchableOpacity>
         </View>
         </View>
+        <Spinner
+         visible={spinnerloading}
+        />
         <MapView style={styles.mapStyle} 
          initialRegion={{
              latitude:location.latitude,
@@ -118,7 +127,7 @@ export default class Places extends React.Component {
         </Marker>
           
         
-          {places
+          {places&& visiblemark
           ?places.map((location,id)=>    //condição para evitar erro de null ou undefined,solução criada para executar a função apos o carreamento da tela.
           <Marker
             key={id}
@@ -141,12 +150,12 @@ export default class Places extends React.Component {
               <View style={styles.modal}>
                 <View style={styles.modalContainer}>
                 <Text style={{fontSize:18,fontWeight:'bold',marginVertical:-20,marginBottom:2}}>Por favor Escolha um raio de busca em Km:</Text>
-                <TouchableOpacity onPress={()=> this.setState({visible:false},this.getBoundsCoordinates('1'))}>
+                <TouchableOpacity onPress={()=> this.setState({visible:false,visiblemark:false},this.getBoundsCoordinates('1'))}>
                   <Text style={styles.modalText}>1KM</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={()=> this.setState({visible:false},this.getBoundsCoordinates('3'))}>
+                <TouchableOpacity onPress={()=> this.setState({visible:false,visiblemark:false},this.getBoundsCoordinates('3'))}>
                   <Text style={styles.modalText}>3KM</Text>
-                </TouchableOpacity><TouchableOpacity onPress={()=> this.setState({visible:false},this.getBoundsCoordinates('5'))}>
+                </TouchableOpacity><TouchableOpacity onPress={()=> this.setState({visible:false,visiblemark:false},this.getBoundsCoordinates('5'))}>
                   <Text style={styles.modalText}>5KM</Text>
                 </TouchableOpacity>
                 </View>

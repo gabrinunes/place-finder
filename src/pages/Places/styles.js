@@ -8,11 +8,6 @@ export default StyleSheet.create({
       backgroundColor: '#fff',
       paddingTop:25
     },
-    loading:{
-     flex:1,
-     alignItems:'center',
-     paddingTop:205
-    }, 
     button:{
      fontSize:35,
      color:'#41414d',
